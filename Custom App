@@ -1,0 +1,213 @@
+STUDENT DATABASE APP:
+
+ 2. Create a Custom Object
+Go to Setup → Object Manager → Create → Custom Object.
+
+Object Label: Student
+
+Plural Label: Students
+
+Object Name: Student__c
+
+Enable:
+
+“Allow Reports”
+
+“Allow Activities”
+
+“Track Field History” (optional)
+
+“Launch New Custom Tab Wizard”
+
+Click Save.
+
+-----------------------
+
+✅ 3. Create Custom Fields
+Field Label	API Name	Data Type	Required	    Notes
+
+First Name	First_Name__c	Text	          ✔️	              Mandatory field
+Last Name	Last_Name__c	Text	         ✔️	                     Mandatory field
+Date of Birth	DOB__c	        Date	           ✔️	                 Used to calculate age
+Gender	        Gender__c	Picklist	  ❌	         Values: Male, Female, Other
+City	           City__c	Text	           ❌	  
+State	           State__c	Text	            ❌	    
+Country	            Country__c	Text	              ❌	
+Mobile No.	Mobile_No__c	Phone	              ❌	
+Address	            Address__c	Text Area	   ❌	
+PAN No.	          PAN_No__c	Text	           ❌	
+Aadhar No.	Aadhar_No__c	Text	           ❌	
+Email ID	Email__c	Email	            ✔️	              Mandatory field
+Is Eligible to Vote	Is_Eligible__c	Formula (Checkbox)	❌	Formula: TODAY() - DOB__c >= 6570
+
+---------------------------------------------
+✅ 5. Create Page Layout
+Customize Page Layout → Add all created fields.
+
+Drag Is Eligible to Vote formula field to show on the layout.
+
+=========================
+✅ 6. Create a List View (Optional)
+Go to App Launcher → Student tab.
+
+Click Create New View → Filter where Is Eligible to Vote = True.
+
+Name: Eligible Voters.
+===================================
+
+
+
+Go to Setup → Search "App Manager".
+
+Click New Lightning App (or Classic App).
+
+Name it: Student Database App.
+
+Add utility bar (optional), logo, and supported objects.
+
+system administrator
+
+Click Next, add profiles if needed, then Save & Finish.
+
+==============
+✅ 7. Test Functionality
+Create new Student records with different DOBs.
+
+Check if Is Eligible to Vote is auto-calculated correctly.
+
+Under 18 → ❌
+
+18 or above → ✅
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------
+
+EMPLOYEE::
+
+
+
+
+
+
+
+
+
+✅ 2. Create a Custom Object
+Object Label: Employee
+
+Object Name: Employee__c
+
+Enable:
+
+Allow Reports
+
+Allow Activities
+
+Track Field History (optional)
+
+Launch New Custom Tab Wizard
+
+Click Save
+
+-------------------------------------------------------
+Field Label	API Name	Data Type	Required	Notes
+Full Name	Full_Name__c	Text	          ✔️	      Mandatory field
+E-mail ID	Email_ID__c	Email	           ✔️	      Mandatory field
+Employee ID	Employee_ID__c	Text	           ✔️	        Unique ID
+Paper Publication  Paper_Publication__c	Checkbox	❌	Checked if employee has published paper
+Consultancy	Consultancy__c	Checkbox	   ❌	     Checked if employee has consultancy work
+Eligible for Increment	Eligible_Increment__c	Formula (Checkbox)	❌	Logic below
+----------------------------------------------------
+
+✅ 4. Formula Field: Eligible for Increment
+Field Type: Formula
+Return Type: Checkbox (Boolean)
+Formula:
+AND(Paper_Publication__c = TRUE, Consultancy__c = TRUE)
+
+============================
+
+
+✅ 5. Customize Page Layout
+Add all fields to the Employee__c layout.
+
+Include the Eligible for Increment formula field for display.
+
+====================
+
+
+✅ 7. Create List View (Optional)
+To show only eligible employees:
+
+Create new list view: Eligible for Increment
+
+Filter: Eligible for Increment = True
+========================
+
+
+✅ 1. Create a Custom App
+Go to Setup → Search for App Manager.
+
+Click New Lightning App (or Classic App).
+
+App Name: Employee Database
+
+Add utility bar (optional), logo, and supported objects.
+
+Click Next, assign to profiles, and Save.
+
+
+
+
+
+==========================
+
+✅ 8. Test the App
+Go to App Launcher → Open Employee tab.
+
+Add test employee records.
+
+Mark checkboxes for Paper Publication and Consultancy.
+
+Check that Eligible for Increment becomes TRUE only when both are checked.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
