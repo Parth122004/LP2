@@ -1,0 +1,154 @@
+TEMPERATURE CONVERTER:
+
+public class TemperatureConverterController {
+    public Map<String, List<Double>> temperatureMap { get; set; }
+    public Double operand {get; set;}
+    public Double result {get; set;}
+    public String operandType {get; set;}
+    public String resultType {get; set;} 
+    
+    //Constructor Initializes the temperature map with common reference values for conversion logic.
+    public TemperatureConverterController() {
+        temperatureMap = new Map<String, List<Double>>();
+        temperatureMap.put('Celsius', new List<Double>{0.0, 100.0});
+        temperatureMap.put('Fahrenheit', new List<Double>{32.0, 212.0});
+        temperatureMap.put('Kelvin', new List<Double>{273.15, 373.15});
+    }
+    
+    public List<SelectOption> getTempOptions(){
+        List<SelectOption> options = new List<SelectOption>();
+        for(String tempType: temperatureMap.keySet()){
+            options.add(new SelectOption(tempType, tempType));
+        }
+        return options;
+    }
+
+    public void convert(){
+        if(temperatureMap.containsKey(operandType) && temperatureMap.containsKey(resultType) && operand != null){
+            Double operandLow = temperatureMap.get(operandType).get(0);
+            Double operandHigh = temperatureMap.get(operandType).get(1);
+            Double resultLow = temperatureMap.get(resultType).get(0);
+            Double resultHigh = temperatureMap.get(resultType).get(1);
+            result = ((operand-operandLow)/(operandHigh-operandLow))*(resultHigh - resultLow) + resultLow;
+        }
+    }   
+}
+
+DEb:
+
+TemperatureConverterController tcc = new TemperatureConverterController();
+tcc.operand = 1;                  // Input value
+tcc.operandType = 'Celsius';          // From Celsius
+tcc.resultType = 'Fahrenheit';        // To Fahrenheit
+tcc.convert();                        // Perform conversion
+
+System.debug('Converted Result: ' + tcc.result); // Should be approximately 33.8
+
+
+
+UI:
+
+<apex:page controller="TemperatureConverterController">
+    <apex:form>
+        <apex:pageBlock title="Temperature Converter">
+        	<apex:pageBlockSection columns="2">
+            	
+                <apex:outputLabel value="Input" />
+                <apex:inputText value="{!operand}" />
+                
+                <apex:outputLabel value="Input Temperature Type: " />
+                <apex:selectList value="{!operandType}">
+                    <apex:selectOptions value="{!tempOptions}" />
+                </apex:selectList>
+                
+                <apex:outputLabel value="Output Temperature Type: " />
+                	<apex:selectList value="{!resultType}">
+                    <apex:selectOptions value="{!tempOptions}" />
+                </apex:selectList>
+                
+                <apex:commandButton value="Convert" action="{!convert}" reRender="outputBlock" />
+        	
+            </apex:pageBlockSection>
+            
+
+            <apex:outputPanel id="outputBlock">
+                <apex:outputText value="Result {!result}" />
+            </apex:outputPanel>
+        
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
+
+
+
+
+
+-------------------------------
+
+
+public class TemperatureConverter { 
+    public Decimal inputTemp { get; set; } 
+    public String scale { get; set; } // 'CtoF' or 'FtoC' 
+    public Decimal convertedTemp { get; set; } 
+    public String result { get; set; } 
+ 
+    public List<SelectOption> getScaleOptions() { 
+        List<SelectOption> options = new List<SelectOption>(); 
+        options.add(new SelectOption('CtoF', 'Celsius to Fahrenheit')); 
+        options.add(new SelectOption('FtoC', 'Fahrenheit to Celsius')); 
+        return options; 
+    } 
+ 
+    public void convert() { 
+        if (scale == 'CtoF') { 
+            convertedTemp = (inputTemp * 9 / 5) + 32; 
+            result = inputTemp + ' °C = ' + convertedTemp + ' °F'; 
+        } else if (scale == 'FtoC') { 
+            convertedTemp = (inputTemp - 32) * 5 / 9; 
+            result = inputTemp + ' °F = ' + convertedTemp + ' °C'; 
+        } else { 
+            result = 'Invalid scale selected.'; 
+        } 
+    } 
+} 
+
+
+
+
+
+
+<apex:page controller="TemperatureConverter"> 
+    <h2>Temperature Converter</h2> 
+    <apex:form> 
+        <apex:pageBlock title="Convert Temperature"> 
+            <apex:pageBlockSection columns="1"> 
+                <apex:inputText value="{!inputTemp}" label="Enter Temperature"/> 
+                <apex:selectList value="{!scale}" size="1" label="Conversion Type"> 
+                    <apex:selectOptions value="{!scaleOptions}"/> 
+                </apex:selectList> 
+                <apex:commandButton value="Convert" action="{!convert}" 
+rerender="resultPanel"/> 
+            </apex:pageBlockSection> 
+ 
+            <apex:outputPanel id="resultPanel"> 
+                <apex:outputText value="{!result}" style="font-weight:bold; color:green;" 
+rendered="{!NOT(ISNULL(result))}"/> 
+            </apex:outputPanel> 
+        </apex:pageBlock> 
+    </apex:form> 
+</apex:page>
+
+
+
+
+
+
+
+
+
+TemperatureConverter tc = new TemperatureConverter(); 
+tc.inputTemp = 100;    // Input temperature value 
+tc.scale = 'CtoF';     // Use 'CtoF' for Celsius to Fahrenheit or 'FtoC' for Fahrenheit to 
+Celsius 
+tc.convert(); 
+System.debug(tc.result);
