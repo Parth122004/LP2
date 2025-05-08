@@ -1,0 +1,142 @@
+FIBONACCI :
+
+
+public class FibonacciSeriesController {
+    public List<Integer> fibonacciSeries {get; set;}
+    public Integer targetCount {get; set;}
+        
+    //constructor, Initializes the series with the first two Fibonacci numbers: 0 and 1.
+    public FibonacciSeriesController(){
+        fibonacciSeries = new List<Integer>();
+        fibonacciSeries.add(0);
+        fibonacciSeries.add(1);
+    }
+    
+    public void solve(){
+        fibonacciSeries = new List<Integer>();
+        fibonacciSeries.add(0);
+        fibonacciSeries.add(1);
+        Integer f1;
+        Integer f2;
+        Integer f3;
+        Integer curr = 2;
+        while(curr <= targetCount){
+            f1 = fibonacciSeries[curr - 2];
+            f2 = fibonacciSeries[curr - 1];
+            f3 = f1 + f2;
+            fibonacciSeries.add(f3);
+            curr += 1;
+        }
+    }
+    
+    public void printSeries(){
+        for(Integer i=0; i<fibonacciSeries.size(); i++){
+            System.debug(fibonacciSeries[i]);
+        }
+    }
+    
+}
+
+
+DEB:
+// Instantiate the controller
+FibonacciSeriesController fib = new FibonacciSeriesController();
+
+// Set the number of Fibonacci numbers you want
+fib.targetCount = 10;
+
+// Generate the Fibonacci series
+fib.solve();
+
+// Print the series to debug log
+fib.printSeries();
+
+
+
+UI:
+
+<apex:page controller="FibonacciSeriesController">
+    <apex:form >
+    	<apex:pageBlock title="Fibonacci Series">
+        	<apex:pageBlockSection columns="2">
+                <apex:outputLabel value="Number of Fibonacci Elements:  " />
+                <apex:inputText value="{!targetCount}" />
+                <apex:outputLabel value="" />
+                <apex:commandButton value="Generate Fibonacci" action="{!solve}" reRender="outputBlock" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" id="outputBlock">
+        		<apex:pageBlockTable value="{!fibonacciSeries}" var="num" >
+					<apex:column value="{!num}" />                
+                </apex:pageBlockTable>
+        	</apex:pageBlockSection>
+        </apex:pageBlock>        
+    </apex:form>
+</apex:page>
+
+
+
+=======================
+
+
+public class FibonacciSeries { 
+    public Integer n { get; set; } // Number of terms 
+    public String result { get; set; } // Output result string 
+ 
+    public void generate() { 
+        if (n == null || n <= 0) { 
+            result = 'Please enter a number greater than 0.'; 
+            return; 
+        } 
+ 
+        List<Integer> series = new List<Integer>(); 
+        Integer a = 0, b = 1; 
+ 
+        series.add(a); 
+        if (n > 1) { 
+            series.add(b); 
+        } 
+ 
+        for (Integer i = 2; i < n; i++) { 
+            Integer next = a + b; 
+            series.add(next); 
+            a = b; 
+            b = next; 
+        } 
+ 
+        List<String> output = new List<String>(); 
+        for (Integer num : series) { 
+            output.add(String.valueOf(num)); 
+        } 
+ 
+        result = 'Fibonacci Series: ' + String.join(output, ', '); 
+    } 
+} 
+
+
+//ui 
+
+
+<apex:page controller="FibonacciSeries"> 
+    <h2>Fibonacci Series Generator</h2> 
+    <apex:form> 
+        <apex:pageBlock title="Enter Number of Terms"> 
+            <apex:pageBlockSection columns="1"> 
+                <apex:inputText value="{!n}" label="Number of Terms"/> 
+                <apex:commandButton value="Generate" action="{!generate}" 
+rerender="resultPanel"/> 
+            </apex:pageBlockSection> 
+ 
+            <apex:outputPanel id="resultPanel"> 
+                <apex:outputText value="{!result}" style="font-weight:bold; color:blue;" 
+rendered="{!NOT(ISNULL(result))}"/> 
+            </apex:outputPanel> 
+        </apex:pageBlock> 
+    </apex:form> 
+</apex:page> 
+
+
+//db
+
+String result = FibonacciSeries.generate(10); // Replace 10 with desired number of 
+terms 
+System.debug(result);
