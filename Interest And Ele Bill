@@ -1,0 +1,168 @@
+public class CompoundInterestCont { 
+    public Decimal principal { get; set; } 
+    public Decimal rate { get; set; } 
+    public Decimal duration { get; set; } // Renamed from 'time' 
+    public Integer n { get; set; } 
+    public Decimal compoundInterest { get; set; } 
+    public Decimal amount { get; set; } 
+ 
+    public void calculate() { 
+        if(principal > 0 && rate > 0 && duration > 0 && n > 0) { 
+            Double P = (Double) principal; 
+            Double r = (Double) (rate / 100); 
+            Double t = (Double) duration; 
+            Double nt = n * t; 
+            Double baseVal = 1 + (r / n); 
+            Double A = P * Math.pow(baseVal, nt); 
+            amount = (Decimal) A; 
+            compoundInterest = amount - principal; 
+        } else { 
+            amount = 0; 
+            compoundInterest = 0; 
+        } 
+    } 
+} 
+
+//ui:
+
+<apex:page controller="CompoundInterestCont"> 
+    <h2>Compound Interest Calculator</h2> 
+    <apex:form> 
+        <apex:pageBlock title="Enter Values"> 
+            <apex:pageBlockSection> 
+                <apex:inputText value="{!principal}" label="Principal (P)"/> 
+                <apex:inputText value="{!rate}" label="Rate (%) (r)"/> 
+                <apex:inputText value="{!duration}" label="Time (Years) (t)"/> 
+                <apex:inputText value="{!n}" label="Compounded Times/Year (n)"/> 
+            </apex:pageBlockSection> 
+ 
+            <apex:pageBlockSection> 
+                <apex:commandButton value="Calculate" action="{!calculate}"/> 
+            </apex:pageBlockSection> 
+ 
+            <apex:pageBlockSection rendered="{!NOT(ISNULL(compoundInterest))}"> 
+                <apex:outputText value="Total Amount (A): ₹{!amount}"/><br/> 
+                <apex:outputText value="Compound Interest: ₹{!compoundInterest}"/> 
+            </apex:pageBlockSection> 
+        </apex:pageBlock> 
+    </apex:form> 
+</apex:page> 
+
+
+//db:
+
+CompoundInterestCont c = new CompoundInterestCont(); 
+c.principal = 10000;     // ₹10,000 
+c.rate = 5;             
+ // 5% interest rate 
+c.duration = 2;         
+c.n = 4;                
+c.calculate(); 
+ // 2 years 
+ // Compounded quarterly 
+System.debug('Total Amount (A): ₹' + c.amount); 
+System.debug('Compound Interest: ₹' + c.compoundInterest);
+
+
+
+==========================================================================
+
+
+Interest :
+
+
+public class InterestCalculator {
+    
+    public class Result {
+        public Double principal;
+        public Double rate;
+        public Integer time;
+        public Integer frequency;  // For compound interest only
+        public Double simpleInterest;
+        public Double compoundInterest;
+        public Double totalAmountCI;
+        public Double totalAmountSI;
+    }
+
+    // Simple Interest = (P * R * T) / 100
+    public static Double calculateSimpleInterest(Double p, Double r, Integer t) {
+        if (p == null || r == null || t == null || p < 0 || r < 0 || t < 0) {
+            System.debug('Invalid input for Simple Interest.');
+            return null;
+        }
+        return (p * r * t) / 100;
+    }
+
+    // Compound Interest = P * (1 + R/n)^nt - P
+    public static Double calculateCompoundInterest(Double p, Double r, Integer t, Integer n) {
+        if (p == null || r == null || t == null || n == null || p < 0 || r < 0 || t < 0 || n <= 0) {
+            System.debug('Invalid input for Compound Interest.');
+            return null;
+        }
+        Double amount = p * Math.pow((1 + r / (100 * n)), n * t);
+        return amount - p;
+    }
+
+    public static Result calculateAll(Double p, Double r, Integer t, Integer n) {
+        Result res = new Result();
+
+        Double si = calculateSimpleInterest(p, r, t);
+        Double ci = calculateCompoundInterest(p, r, t, n);
+        Double totalCI = (ci != null) ? p + ci : null;
+        Double totalSI = (si != null) ? p + si : null;
+
+        res.principal = p;
+        res.rate = r;
+        res.time = t;
+        res.frequency = n;
+        res.simpleInterest = si != null ? Math.round(si * 100.0) / 100.0 : null;
+        res.compoundInterest = ci != null ? Math.round(ci * 100.0) / 100.0 : null;
+        res.totalAmountSI = totalSI != null ? Math.round(totalSI * 100.0) / 100.0 : null;
+        res.totalAmountCI = totalCI != null ? Math.round(totalCI * 100.0) / 100.0 : null;
+
+        System.debug('--- Simple Interest ---');
+        System.debug('SI: ₹' + res.simpleInterest);
+        System.debug('Total with SI: ₹' + res.totalAmountSI);
+
+        System.debug('--- Compound Interest ---');
+        System.debug('CI: ₹' + res.compoundInterest);
+        System.debug('Total with CI: ₹' + res.totalAmountCI);
+
+        return res;
+    }
+}
+
+//db:
+
+InterestCalculator.Result r = InterestCalculator.calculateAll(5000.0, 5.5, 3, 4);
+
+=====================================================================================
+
+BILL:
+
+// --- 4. Electricity Bill Calculator
+public class ElectricityBill {
+    public void calculateBill(Integer units) {
+        if (units == null || units < 0) {
+            System.debug('Error: Invalid input. Units cannot be null or negative.');
+            return;
+        }
+
+        Double bill = 0.0;
+
+        if (units <= 100) {
+            bill = units * 5.0;
+        } else if (units <= 200) {
+            bill = (100 * 5.0) + ((units - 100) * 7.5);
+        } else {
+            bill = (100 * 5.0) + (100 * 7.5) + ((units - 200) * 10.0);
+        }
+
+        System.debug('Units Consumed: ' + units);
+        System.debug('Total Bill: ₹' + String.valueOf(bill.setScale(2)));
+    }
+}
+
+// To execute in Anonymous Window:
+ElectricityBill eb = new ElectricityBill();
+eb.calculateBill(150); // Example of 150 units consumed
