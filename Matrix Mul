@@ -1,0 +1,61 @@
+MATRIX MUL:
+
+public class MatrixMultiplication {
+    public static List<List<Integer>> multiply(List<List<Integer>> A, List<List<Integer>> B) {
+        Integer rowsA = A.size();
+        Integer colsA = A[0].size();
+        Integer rowsB = B.size();
+        Integer colsB = B[0].size();
+
+        // Check if multiplication is possible
+        if (colsA != rowsB) {
+            System.debug('Matrix multiplication not possible. Columns of A must equal rows of B.');
+            return null;
+        }
+
+        List<List<Integer>> result = new List<List<Integer>>();
+        
+        // Initialize result matrix with 0s
+        for (Integer i = 0; i < rowsA; i++) {
+            List<Integer> row = new List<Integer>();
+            for (Integer j = 0; j < colsB; j++) {
+                row.add(0);
+            }
+            result.add(row);
+        }
+
+        // Matrix multiplication logic
+        for (Integer i = 0; i < rowsA; i++) {
+            for (Integer j = 0; j < colsB; j++) {
+                Integer sum = 0;
+                for (Integer k = 0; k < colsA; k++) {
+                    sum += A[i][k] * B[k][j];
+                }
+                result[i][j] = sum;
+            }
+        }
+
+        return result;
+    }
+}
+
+
+deb:
+
+List<List<Integer>> A = new List<List<Integer>>();
+A.add(new List<Integer>{1, 2, 3});
+A.add(new List<Integer>{4, 5, 6});
+A.add(new List<Integer>{7, 8, 9});
+
+List<List<Integer>> B = new List<List<Integer>>();
+B.add(new List<Integer>{9, 8, 7});
+B.add(new List<Integer>{6, 5, 4});
+B.add(new List<Integer>{3, 2, 1});
+
+List<List<Integer>> result = MatrixMultiplication.multiply(A, B);
+
+for (List<Integer> row : result) {
+    System.debug(row);
+}
+
+//For two n × n matrices, the time complexity is O(n³).
