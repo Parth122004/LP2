@@ -1,0 +1,120 @@
+Geometry Area:
+
+
+public class GeometryAreaController {
+    public Double radius { get; set; }
+    public Double length { get; set; }
+    public Double width { get; set; }
+    public Double baseVal { get; set; }
+    public Double height { get; set; }
+    public Double side { get; set; }
+
+    public String result { get; set; }
+
+    public void calculateCircle() {
+        if (radius == null || radius < 0) {
+            result = 'Error: Radius cannot be null or negative.';
+            return;
+        }
+        Double area = Math.PI * radius * radius;
+        result = 'Area of Circle: ' + area;
+    }
+
+    public void calculateRectangle() {
+        if (length == null || width == null || length < 0 || width < 0) {
+            result = 'Error: Length and width must be non-negative.';
+            return;
+        }
+        Double area = length * width;
+        result = 'Area of Rectangle: ' + area;
+    }
+
+    public void calculateTriangle() {
+        if (baseVal == null || height == null || baseVal < 0 || height < 0) {
+            result = 'Error: Base and height must be non-negative.';
+            return;
+        }
+        Double area = 0.5 * baseVal * height;
+        result = 'Area of Triangle: ' + area;
+    }
+
+    public void calculateSquare() {
+        if (side == null || side < 0) {
+            result = 'Error: Side must be non-negative.';
+            return;
+        }
+        Double area = side * side;
+        result = 'Area of Square: ' + area;
+    }
+}
+
+
+***Debbuger:
+// Create an instance of the controller
+//creates object g
+GeometryAreaController g = new GeometryAreaController();
+
+// Set values and call Circle area method
+g.radius = 5;
+g.calculateCircle();
+System.debug(g.result);
+
+// Set values and call Rectangle area method
+g.length = 4;
+g.width = 3;
+g.calculateRectangle();
+System.debug(g.result);
+
+// Set values and call Triangle area method
+g.baseVal = 6;
+g.height = 2;
+g.calculateTriangle();
+System.debug(g.result);
+
+// Set values and call Square area method
+g.side = 7;
+g.calculateSquare();
+System.debug(g.result);
+
+UI:
+
+<apex:page controller="GeometryAreaController">
+    <apex:form >
+        <apex:pageBlock title="Geometry Area Calculator">
+
+            <!-- Circle -->
+            <apex:pageBlockSection title="Circle" columns="2">
+                <apex:inputText label="Radius" value="{!radius}" />
+                <apex:commandButton value="Calculate Circle Area" action="{!calculateCircle}" rerender="output"/>
+            </apex:pageBlockSection>
+
+            <!-- Rectangle -->
+            <apex:pageBlockSection title="Rectangle" columns="2">
+                <apex:inputText label="Length" value="{!length}" />
+                <apex:inputText label="Width" value="{!width}" />
+                <apex:commandButton value="Calculate Rectangle Area" action="{!calculateRectangle}" rerender="output"/>
+            </apex:pageBlockSection>
+
+            <!-- Triangle -->
+            <apex:pageBlockSection title="Triangle" columns="2">
+                <apex:inputText label="Base" value="{!baseVal}" />
+                <apex:inputText label="Height" value="{!height}" />
+                <apex:commandButton value="Calculate Triangle Area" action="{!calculateTriangle}" rerender="output"/>
+            </apex:pageBlockSection>
+
+            <!-- Square -->
+            <apex:pageBlockSection title="Square" columns="2">
+                <apex:inputText label="Side" value="{!side}" />
+                <apex:commandButton value="Calculate Square Area" action="{!calculateSquare}" rerender="output"/>
+            </apex:pageBlockSection>
+
+            <apex:outputPanel id="output">
+                <apex:outputText value="{!result}" style="font-weight:bold; font-size:16px; color:blue;" />
+            </apex:outputPanel>
+
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
+=================================================================
+
+
