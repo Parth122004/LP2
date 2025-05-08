@@ -1,0 +1,137 @@
+PRIME CHECK:
+
+public class PrimeNumberController {
+    public Integer num {get; set;}
+    public Boolean showResult {get; private set;}
+    public String result {get; private set;}
+        
+    private Boolean isPrime(){
+        if(num <= 1){
+            return false;
+        }
+        if(num <= 3){
+            return true;
+        }
+        if((Math.mod(num,2) == 0)|| (Math.mod(num,3) == 0)){
+            return false;
+        }
+        //if divisible by 2 or 3, it's not prime.
+        Integer i = 5;
+        while(i*i <= num){
+            if((Math.mod(num, i) == 0)|| (Math.mod(num,(i+2)) == 0)){
+                return false;
+            }
+           	i += 6;
+        }
+        return true;
+    }
+   
+    // Efficient loop to check divisibility: Skips even numbers and multiples of 3. Checks i and i+2 for divisibility. Iterates while i * i ≤ num.
+
+    public void calculateResult(){
+        try{
+            if(isPrime()){
+                result = 'Number ' + num + ' is Prime!';
+            }else {
+                result = 'Number ' + num + ' is NOT Prime';
+            }
+            showResult = true;
+        }catch(Exception e){
+            showResult = false;
+            result = 'Exception occurred while calculating';
+        }
+    }
+}
+
+DEB:
+
+// Instantiate the PrimeNumberController class
+PrimeNumberController primeCtrl = new PrimeNumberController();
+
+// Set a test number
+primeCtrl.num = 28;  // You can change this number to test different inputs
+
+// Call the method to calculate result
+primeCtrl.calculateResult();
+
+// Print the result to debug logs
+System.debug('Is Prime? -> ' + primeCtrl.result);
+//System.debug('Show Result Flag: ' + primeCtrl.showResult);
+
+
+
+UI:
+
+<apex:page controller="PrimeNumberController">
+	<apex:form>
+    	<apex:pageBlock title="Prime or Not Prime Calculator">
+        	<apex:pageBlockSection columns="2">
+                <apex:outputLabel value="Enter Number" />
+                <apex:inputText value="{!num}" />
+                
+                <apex:outputLabel value="" />
+                <apex:commandButton value="Calculate" action="{!calculateResult}" reRender="resultBlock" />
+            </apex:pageBlockSection>
+            
+            <apex:outputPanel id="resultBlock">
+				<apex:outputPanel rendered="{!showResult}">
+                    <apex:outputText value="Result: {!result}" />
+                </apex:outputPanel>
+                
+            </apex:outputPanel>
+            
+        </apex:pageBlock>
+    </apex:form>    
+
+
+============================
+
+public class PrimeNumberCont { 
+    public Integer inputNumber { get; set; } 
+    public String result { get; set; } 
+ 
+    public void checkPrime() { 
+        if (inputNumber == null || inputNumber <= 1) { 
+            result = inputNumber + ' is NOT a Prime Number.'; 
+            return; 
+        } 
+ 
+        Boolean isPrime = true; 
+        for (Integer i = 2; i <= Math.floor(Math.sqrt(Decimal.valueOf(inputNumber))); i++) { 
+            if (Math.mod(inputNumber, i) == 0) { 
+                isPrime = false; 
+                break; 
+            } 
+        } 
+ 
+        result = isPrime  
+            ? inputNumber + ' is a Prime Number.'  
+            : inputNumber + ' is NOT a Prime Number.'; 
+    } 
+} 
+
+
+
+<apex:page controller="PrimeNumberCont"> 
+    <apex:form> 
+        <apex:pageBlock title="Prime Number Checker"> 
+            <apex:pageBlockSection> 
+                <apex:inputText value="{!inputNumber}" label="Enter a Number"/> 
+                <apex:commandButton value="Check" action="{!checkPrime}" 
+rerender="resultPanel"/> 
+            </apex:pageBlockSection> 
+            <apex:outputPanel id="resultPanel"> 
+                <apex:outputText value="{!result}" style="font-weight:bold; color:blue;" 
+rendered="{!NOT(ISNULL(result))}"/> 
+            </apex:outputPanel> 
+        </apex:pageBlock> 
+    </apex:form> 
+</apex:page> 
+
+
+
+
+PrimeNumberCont p = new PrimeNumberCont(); 
+p.inputNumber = 29; // Change this to any number you want to test 
+p.checkPrime(); 
+System.debug(p.result);
