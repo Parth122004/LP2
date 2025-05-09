@@ -1,0 +1,171 @@
+def airline_cargo_expert_system():
+    print("Airline & Cargo Expert System: Welcome! How can I assist you with scheduling today?")
+
+    while True:
+        user_input = input("You: ").strip().lower()
+
+        # Greeting
+        if user_input in ["hi", "hello"]:
+            print("Airline & Cargo Expert System: Hello! How can I help you with your scheduling needs?")
+
+        # Gratitude
+        elif user_input in ["thanks", "thank you"]:
+            print("Airline & Cargo Expert System: You're welcome! Fly safe and have a great day!")
+
+        # Apology
+        elif user_input == "sorry":
+            print("Airline & Cargo Expert System: No problem at all!")
+
+        # Negative response
+        elif any(neg in user_input for neg in ["no", "don't", "not interested"]):
+            print("Airline & Cargo Expert System: I understand. Let me know if you need any assistance later!")
+
+        # Exit
+        elif user_input in ["bye", "exit"]:
+            print("Airline & Cargo Expert System: Thank you for using our services. Safe travels!")
+            break
+
+        # Flight booking
+        elif ("book" in user_input or "ticket" in user_input or "flight" in user_input) and not ("cargo" in user_input or "freight" in user_input):
+            departure = input("Departure city: ").strip().lower()
+            destination = input("Destination city: ").strip().lower()
+
+            route_options = {
+                "new york-london": ["Delta Airlines: 7:30 AM, 6:00 PM", "British Airways: 9:00 AM, 11:00 PM"],
+                "new york-paris": ["Air France: 10:15 AM", "American Airlines: 8:45 PM"],
+                "chicago-tokyo": ["United Airlines: 1:20 PM", "JAL: 11:45 AM"],
+                "los angeles-sydney": ["Qantas: 10:30 PM", "United Airlines: 11:15 PM"],
+                "london-dubai": ["Emirates: 8:20 AM, 3:15 PM", "British Airways: 10:30 AM"]
+            }
+
+            route_key = f"{departure}-{destination}"
+            alt_route_key = f"{destination}-{departure}"
+
+            if route_key in route_options:
+                print(f"Available flights from {departure.title()} to {destination.title()}:")
+                for flight in route_options[route_key]:
+                    print(f"- {flight}")
+                class_choice = input("Preferred class (Economy/Business/First): ").strip().lower()
+                passengers = input("Number of passengers: ").strip()
+                print(f"Noted preference: {class_choice.title()} class for {passengers} passenger(s).")
+                print("Please contact 1-800-FLY-BOOK to complete your reservation.")
+            elif alt_route_key in route_options:
+                print(f"Return flights from {destination.title()} to {departure.title()} are available. Interested?")
+            else:
+                print("No direct flights found. Please contact 1-800-FLY-HELP for assistance.")
+
+        # Cargo Shipping
+        elif any(word in user_input for word in ["cargo", "freight", "shipment"]):
+            origin = input("Origin city: ").strip().lower()
+            destination = input("Destination city: ").strip().lower()
+            cargo_type = input("Cargo type (General/Perishable/Hazardous/Oversized): ").strip().lower()
+            cargo_weight = input("Weight in kg: ").strip()
+
+            try:
+                weight = float(cargo_weight)
+                cargo_options = {
+                    "perishable": ["Refrigerated containers required", "Priority shipping available", "Temperature monitoring"],
+                    "hazardous": ["Special handling", "Safety documentation", "Restricted flights"],
+                    "oversized": ["Special equipment", "Limited flights", "Advance booking required"],
+                    "general": ["Standard shipping", "Regular schedule"]
+                }
+
+                if cargo_type in cargo_options:
+                    print(f"Notes for {cargo_type} cargo:")
+                    for note in cargo_options[cargo_type]:
+                        print(f"- {note}")
+
+                base_rate = 5.0
+                multipliers = {"general": 1.0, "perishable": 1.5, "hazardous": 2.0, "oversized": 1.8}
+                estimated_cost = weight * base_rate * multipliers.get(cargo_type, 1.0)
+                print(f"Estimated cost: ${estimated_cost:.2f}")
+                print("Contact 1-800-AIR-CARGO for final booking.")
+
+            except ValueError:
+                print("Invalid weight input. Please enter a numeric value.")
+
+        # Flight delay or cancellation
+        elif any(x in user_input for x in ["delay", "cancel", "postpone"]):
+            flight_number = input("Flight number: ").strip().upper()
+            if flight_number:
+                import random
+                if "delay" in user_input:
+                    delay_time = random.choice([0, 30, 45, 60, 120])
+                    if delay_time == 0:
+                        print(f"Flight {flight_number} is on schedule.")
+                    else:
+                        print(f"Flight {flight_number} delayed by {delay_time} minutes.")
+                elif "cancel" in user_input:
+                    print("Cancellation policies:")
+                    print("- Economy: 70% refund if 24+ hours before")
+                    print("- Business/First: 85% refund if 24+ hours before")
+                    print("- All classes: 50% refund if <24 hours before")
+                    print("Call 1-800-FLY-HELP for cancellations.")
+            else:
+                print("Provide a valid flight number.")
+
+        # Scheduling or rescheduling
+        elif any(x in user_input for x in ["schedule", "reschedule"]):
+            print("Scheduling/rescheduling requires booking reference.")
+            current_booking = input("Do you have a booking? (yes/no): ").strip().lower()
+            if current_booking == "yes":
+                ref = input("Booking reference: ").strip().upper()
+                print(f"Retrieved booking {ref}.")
+                print("Please contact 1-800-FLY-SCHED to make changes.")
+            else:
+                print("To schedule a new flight or cargo, use the booking service.")
+
+        # Baggage Info
+        elif any(x in user_input for x in ["baggage", "luggage"]):
+            flight_class = input("Ticket class (Economy/Business/First): ").strip().lower()
+            baggage_allowance = {
+                "economy": ["1 checked bag (23kg)", "1 carry-on (7kg)", "1 personal item"],
+                "business": ["2 checked bags (32kg each)", "1 carry-on (10kg)", "1 personal item"],
+                "first": ["3 checked bags (32kg each)", "1 carry-on (10kg)", "1 personal item"]
+            }
+            if flight_class in baggage_allowance:
+                print(f"{flight_class.title()} class baggage allowance:")
+                for item in baggage_allowance[flight_class]:
+                    print(f"- {item}")
+                excess = input("Need info on excess charges? (yes/no): ").strip().lower()
+                if excess == "yes":
+                    print("Excess baggage: $25 per kg over limit. Pre-booking saves 20%.")
+            else:
+                print("Please enter a valid class.")
+
+        # Tracking
+        elif any(x in user_input for x in ["track", "status"]):
+            tracking_type = input("Track flight or cargo? ").strip().lower()
+            if "flight" in tracking_type:
+                flight_number = input("Flight number: ").strip().upper()
+                print(f"Flight {flight_number} is in transit. For updates, visit our site.")
+            elif "cargo" in tracking_type:
+                tracking_id = input("Tracking ID: ").strip().upper()
+                print(f"Shipment {tracking_id} is at the sorting facility.")
+                print("Estimated delivery in 48 hours.")
+            else:
+                print("Please specify 'flight' or 'cargo'.")
+
+        # Unknown input
+        else:
+            print("Sorry, I didn't understand that. For help, call:")
+            print("- Passenger: 1-800-FLY-HELP")
+            print("- Cargo: 1-800-AIR-CARGO")
+
+
+# ▶ How to Run:
+# Save as `airline_system.py` and run in terminal:
+# python airline_system.py
+airline_cargo_expert_system()
+
+
+#This is an Expert System written in Python designed to assist with airline and cargo services. It supports:
+# Flight and cargo booking
+# Flight status and cancellations
+# Scheduling and baggage info
+# Cargo cost estimation
+# Basic conversation and help
+# It uses rule-based logic and conditional statements to simulate expert responses.
+
+
+
