@@ -1,0 +1,211 @@
+Hill Climbing:
+
+import random
+
+# Sudoku puzzle (0 represents an empty cell)
+# Replace this puzzle with any Sudoku grid that you want to solve
+initial_state = [
+    [5, 3, 0, 0, 7, 0, 0, 0, 0],
+    [6, 0, 0, 1, 9, 5, 0, 0, 0],
+    [0, 9, 8, 0, 0, 0, 0, 6, 0],
+    [8, 0, 0, 0, 6, 0, 0, 0, 3],
+    [4, 0, 0, 8, 0, 3, 0, 0, 1],
+    [7, 0, 0, 0, 2, 0, 0, 0, 6],
+    [0, 6, 0, 0, 0, 0, 2, 8, 0],
+    [0, 0, 0, 4, 1, 9, 0, 0, 5],
+    [0, 0, 0, 0, 8, 0, 0, 7, 9]
+]
+
+# Sudoku grid size and valid numbers
+GRID_SIZE = 9
+VALID_NUMBERS = set(range(1, GRID_SIZE + 1))
+
+# Function to calculate the heuristic value (sum of conflicts)
+def calculate_conflicts(grid):
+    conflicts = 0
+
+    # Check rows
+    for row in grid:
+        for num in set(row):
+            if num != 0 and row.count(num) > 1:
+                conflicts += row.count(num) - 1
+
+    # Check columns
+    for col in range(GRID_SIZE):
+        column = [grid[row][col] for row in range(GRID_SIZE)]
+        for num in set(column):
+            if num != 0 and column.count(num) > 1:
+                conflicts += column.count(num) - 1
+
+    # Check 3x3 subgrids
+    for i in range(0, GRID_SIZE, 3):
+        for j in range(0, GRID_SIZE, 3):
+            subgrid = [grid[i + x][j + y] for x in range(3) for y in range(3)]
+            for num in set(subgrid):
+                if num != 0 and subgrid.count(num) > 1:
+                    conflicts += subgrid.count(num) - 1
+
+    return conflicts
+
+# Generate neighbors by changing one cell at a time
+def generate_neighbors(grid):
+    neighbors = []
+    for i in range(GRID_SIZE):
+        for j in range(GRID_SIZE):
+            if grid[i][j] == 0:  # Only change empty cells (0)
+                for num in VALID_NUMBERS:
+                    new_grid = [row[:] for row in grid]  # Make a copy of the grid
+                    new_grid[i][j] = num
+                    neighbors.append(new_grid)
+    return neighbors
+
+# Hill climbing search to solve Sudoku
+def hill_climbing(grid):
+    current_state = [row[:] for row in grid]
+    current_conflicts = calculate_conflicts(current_state)
+
+    while True:
+        neighbors = generate_neighbors(current_state)
+        best_neighbor = None
+        best_conflicts = current_conflicts
+
+        # Find the neighbor with the lowest conflict
+        for neighbor in neighbors:
+            conflicts = calculate_conflicts(neighbor)
+            if conflicts < best_conflicts:
+                best_conflicts = conflicts
+                best_neighbor = neighbor
+
+        # If no improvement, then we're done
+        if best_conflicts == current_conflicts:
+            break
+
+        # Update to the best neighbor found
+        current_state = best_neighbor
+        current_conflicts = best_conflicts
+
+        # If no conflicts, the puzzle is solved
+        if current_conflicts == 0:
+            break
+
+    return current_state
+
+# Solve the Sudoku puzzle
+def solve_sudoku(initial_state):
+    solution = hill_climbing(initial_state)
+    return solution
+
+# Display the Sudoku grid
+def print_sudoku(grid):
+    for row in grid:
+        print(" ".join(str(num) if num != 0 else '.' for num in row))
+
+# Main execution
+if __name__ == "__main__":
+    print("Initial Sudoku Puzzle:")
+    print_sudoku(initial_state)
+
+    solution = solve_sudoku(initial_state)
+
+    print("\nSolved Sudoku Puzzle:")
+    print_sudoku(solution)
+
+
+
+-----------------------
+
+
+Hill Climbing Search for Sudoku Solver
+Hill Climbing is a simple local search algorithm. It starts with an initial solution and iteratively moves towards a better solution by choosing the neighboring solution with the best (highest or lowest) heuristic value, which measures the "goodness" of the solution. In your case, the heuristic will be the sum of conflicts (e.g., rows, columns, and boxes in Sudoku) that a given state has.
+
+Below is the Python code implementing Hill Climbing Search for solving a Sudoku puzzle.
+
+Steps to Implement:
+Define the Sudoku puzzle: Represent the Sudoku grid as a 2D list (9x9 matrix).
+
+Heuristic Function: A function to calculate the number of conflicts (rows, columns, and 3x3 grids).
+
+Hill Climbing Algorithm: Implement the search strategy that updates the grid by choosing the neighbor with the least number of conflicts.
+
+Neighbor Generation: Generate neighbors by changing one number at a time in the grid.
+
+Stopping Condition: When no more improvements are possible or when the puzzle is solved.
+
+Code Implementation:
+
+=====================================
+
+
+
+
+Explanation of Code:
+Initial Puzzle Setup:
+
+The Sudoku puzzle is represented as a 9x9 grid where 0 denotes an empty cell.
+
+Heuristic Function (calculate_conflicts):
+
+This function calculates the number of conflicts in rows, columns, and 3x3 subgrids. For every repeated number in a row, column, or subgrid, it increments the conflict counter.
+
+Neighbor Generation (generate_neighbors):
+
+Generates all possible neighbors by changing one empty cell at a time. For each empty cell, we try placing each valid number (1-9) and generate a new grid.
+
+Hill Climbing Algorithm (hill_climbing):
+
+Starts with the initial state and calculates its conflict count. It then iterates, generating neighbors and picking the one with the least number of conflicts. The process continues until no better neighbor is found or a solution (0 conflicts) is reached.
+
+Solving and Displaying the Puzzle:
+
+After solving, the solve_sudoku function returns the solution, and print_sudoku prints the result in a human-readable format.
+========================================================================
+
+
+
+Running the Code:
+Input: The input Sudoku puzzle is hardcoded in the initial_state variable. You can replace it with any valid 9x9 Sudoku grid.
+
+Execution: Run the script in a Python environment. It will display the initial and solved Sudoku puzzles.
+
+Output: The solved puzzle will be displayed in the same 9x9 grid format.
+
+
+==================================================
+Viva Questions and Answers:
+1. What is Hill Climbing Search?
+
+Hill Climbing is an uninformed search algorithm that starts with an arbitrary solution to a problem and iteratively moves towards a better solution by choosing the neighbor with the best heuristic value (in this case, the least number of conflicts).
+
+2. What is the heuristic used in this implementation?
+
+The heuristic is the sum of conflicts, which counts repeated numbers in rows, columns, and 3x3 subgrids of the Sudoku grid.
+
+3. What is the stopping criterion for this algorithm?
+
+The algorithm stops when:
+
+There are no conflicts (i.e., the Sudoku is solved).
+
+No better neighboring state can be found.
+
+4. What are the strengths and weaknesses of Hill Climbing?
+
+Strengths:
+
+Simple and easy to implement.
+
+Good for problems with clear improvement directions.
+
+Weaknesses:
+
+It can get stuck in local minima (i.e., a solution that’s not globally optimal).
+
+It doesn't backtrack if it reaches a "dead end" state.
+
+5. Can Hill Climbing be used for all optimization problems?
+
+While Hill Climbing is a general optimization method, it might not work well for complex problems with many local minima, such as in non-convex optimization.
+
+Theory Explanation:
+System Type: This system is an Artificial Intelligence (AI) system focused on search algorithms (specifically Hill Climbing) for solving constraint satisfaction problems like Sudoku. The algorithm is based on the concept of local search and optimization techniques.
+
