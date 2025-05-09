@@ -1,0 +1,154 @@
+import gradio as gr
+import re
+from nltk.chat.util import Chat, reflections
+
+#Imports necessary libraries:
+#gradio is used to create the web UI.
+#re is used for regular expression matching.
+# nltk.chat.util provides a simple chatbot engine with pattern-response functionality.
+
+
+
+# Book categories and titles
+BOOKS = {
+    'fiction': ["The Alchemist", "1984", "The Great Gatsby"],
+    'non-fiction': ["Sapiens", "Atomic Habits", "Educated"],
+    'academic': ["Engineering Mathematics", "Human Anatomy", "Principles of Management"]
+}
+
+# Chatbot pattern-response rules
+patterns = [
+    (r'hi|hello|hey', [
+        'Hello! Welcome to BookWorld. How can I assist you today?',
+        'Hey there! Need help with books or orders?',
+        'Hi! Looking for something to read?']),
+    (r'how are you', [
+        "I'm just a bot, but I'm here to help you find the perfect book!"]),
+    (r'(.*)book(.*)', [
+        'We have fiction, non-fiction, and academic books. What are you looking for?']),
+    (r'(.*)fiction(.*)', [
+        f"Our fiction section includes: {', '.join(BOOKS['fiction'])}. Would you like to buy one?"]),
+    (r'(.*)non[- ]fiction(.*)', [
+        f"Our non-fiction books include: {', '.join(BOOKS['non-fiction'])}. Would you like to buy one?"]),
+    (r'(.*)academic(.*)', [
+        f"Our academic books include: {', '.join(BOOKS['academic'])}. Interested in purchasing?"]),
+    (r'(.*)price(.*)|(.*)cost(.*)', [
+        'Most books range from ₹200 to ₹1500 depending on the category and author.']),
+    (r'(.*)buy(.*)|(.*)order(.*)', [
+        "Great! Let’s proceed with your order. Type 'start order' to begin."]),
+    (r'(.*)help(.*)', [
+        'I can assist you with book categories, prices, and placing orders.']),
+    (r'(.*)contact(.*)', [
+        'You can email us at support@bookworld.com or call 1800-BOOK-123.']),
+    (r'(.*)bye|goodbye|exit', [
+        'Thank you for visiting BookWorld! Goodbye!']),
+    (r'(yes|yeah|yep)', [
+        "Great! Let's proceed with your order. Type 'start order' to begin."]),
+]
+#A list of regex patterns and responses used by the chatbot.
+# Each pattern maps to possible phrases the user might say (e.g., "hi", "how are you") and corresponding responses.
+
+
+# Session state
+session = {"order_mode": False, "step": 0, "category": None}
+#Maintains session state:
+# order_mode: Whether the user is placing an order.
+# step: The current step in the order process.
+# category: The selected category of books.
+
+
+chatbot = Chat(patterns, reflections)
+#Initializes the Chat object with defined patterns and reflections for simple keyword-based conversation.
+
+
+# Step functions for order process
+def handle_step_0(message):
+    if message not in BOOKS:
+        return "Sorry, that category doesn't exist. Please choose from fiction, non-fiction, or academic."
+    session["category"] = message
+    session["step"] = 1
+    return f"You selected {message} category. We have: {', '.join(BOOKS[message])}. Which book would you like to buy? Type 'nothing' to cancel."
+#Handles category selection.
+# Returns a list of books in the chosen category.
+
+def handle_step_1(message):
+    if message == 'nothing':
+        session["order_mode"] = False
+        session["step"] = 0
+        return "Order canceled. Feel free to ask for anything else."
+    session["step"] = 2
+    return f"'{message}' added to cart. Cost is ₹500. Should I confirm the order? (yes/no)"
+#Handles book selection.
+# Confirms if the user wants to proceed with the purchase.
+
+
+def handle_step_2(message):
+    session["order_mode"] = False
+    session["step"] = 0
+    return "Order confirmed! Your book will arrive soon. 📚" if message == 'yes' else "Order not placed. Let me know if you change your mind!"
+
+#Handles final confirmation (yes/no).
+# Finalizes or cancels the orde
+
+step_functions = {
+    0: handle_step_0,
+    1: handle_step_1,
+    2: handle_step_2
+}
+#Maps steps to corresponding functions.
+
+# Main response function
+def respond(message, history):
+    message = message.strip().lower()
+
+    if session["order_mode"]:
+        return step_functions[session["step"]](message)
+
+    if re.fullmatch(r'(.*)start(.*)', message):
+        session["order_mode"] = True
+        session["step"] = 0
+        return "Let's start your order! Which category would you like? (fiction / non-fiction / academic)"
+
+    reply = chatbot.respond(message)
+    return reply if reply else "I'm sorry, I didn't quite catch that. Try asking about books or starting an order!"
+#Main function that responds to user input.
+# Decides if user is chatting or in order mode.
+# Uses regular expressions to detect if order process should begin.
+# Calls appropriate response logic or falls back to NLTK chatbot.
+
+# Gradio UI
+demo = gr.ChatInterface(
+    fn=respond,
+    title="📚 BookWorld Chatbot",
+    description="Ask me about books, prices, or place an order!",
+    theme="soft"
+)
+
+
+#Creates a Gradio chat interface:
+# fn: Function to run on each message.
+# title: Chatbot title.
+# description: Subtext below title.
+# theme: Visual theme.
+
+
+demo.launch()
+#Launches the Gradio app locally in your browser.
+
+
+#how to run
+#pip install gradio nl
+#python.exe -m pip install --upgrade pip
+# import nltk
+#nltk.download('punkt')  # Required for nltk.chat
+#python chat.py
+
+#✅ What is Gradio?
+#Gradio is a Python library that allows you to create web apps for ML models or interactive Python functions with minimal code.
+
+#✅ What is NLTK?
+#NLTK (Natural Language Toolkit) is a library for NLP tasks. Here, we use its basic chatbot utility for rule-based responses.
+
+#✅ What is a Regex Pattern?
+#A regular expression (regex) is a sequence of characters that define a search pattern. Used for matching text input in this project.
+
