@@ -1,0 +1,69 @@
+# Expert System: Library Book Recommender for Project Work
+
+# Sample knowledge base (can be extended)
+books = {
+    "Artificial Intelligence": ["AI: A Modern Approach", "Python Machine Learning", "Deep Learning with Python"],
+    "Web Development": ["HTML & CSS: Design and Build Websites", "Eloquent JavaScript", "Flask Web Development"],
+    "Cybersecurity": ["Cybersecurity Essentials", "Hacking: The Art of Exploitation", "The Web Application Hacker's Handbook"],
+    "Data Science": ["Hands-On Data Science", "Python for Data Analysis", "Data Science from Scratch"],
+    "Networks": ["Computer Networking: Top Down Approach", "Data Communications and Networking", "Networking All-in-One For Dummies"],
+    "Database": ["Database System Concepts", "Learning SQL", "Fundamentals of Database Systems"]
+}
+
+# Function to recommend books based on interest
+def recommend_books(domain):
+    domain = domain.strip().title()
+    if domain in books:
+        return f"Recommended books for {domain}:\n" + "\n".join(f"- {book}" for book in books[domain])
+    else:
+        return "Sorry, we don't have recommendations for that domain. Please try another one."
+
+# Main function to interact with user
+def main():
+    print("Welcome to the Library Expert System!")
+    print("This system recommends books for your project work based on your domain of interest.")
+    print("\nAvailable domains:")
+    for d in books:
+        print(f"- {d}")
+    print("\nEnter 'exit' to quit the system.")
+
+    while True:
+        domain = input("\nEnter your domain of interest: ")
+        if domain.lower() == 'exit':
+            print("Thank you for using the system!")
+            break
+        response = recommend_books(domain)
+        print(response)
+
+# Entry point
+if __name__ == "__main__":
+    main()
+
+
+
+#Q1: What is an Expert System?
+#A: An expert system is a computer program that mimics human expert decision-making ability. It uses a knowledge base and inference rules to make recommendations or solve problems in a specific domain.
+
+#Q2: Which type of AI is this project based on?
+#A: This is a rule-based expert system — a form of symbolic AI or classical AI.
+
+#Q3: What is the inference mechanism used?
+#A: Simple pattern matching: It checks the user’s input (domain of interest) against predefined rules in the knowledge base and returns recommendations.
+
+#Q4: How is this different from a general chatbot?
+#A: This system is domain-specific and makes intelligent recommendations, while general chatbots are designed for broad, often conversational tasks.
+
+#Q5: Can this be extended with machine learning?
+#A: Yes, instead of static rules, book preferences can be learned from user data using supervised learning models.
+
+#Expert System: A software system using a knowledge base of human expertise to solve problems.
+
+#Components:
+
+#Knowledge Base: Facts and rules (book recommendations here).
+
+#Inference Engine: Applies rules to facts (pattern matches domain).
+
+#User Interface: Text-based interaction.
+
+#This system is a Knowledge-Based Expert System, specifically a rule-based recommender designed to assist library users in selecting relevant books for their academic projects.
