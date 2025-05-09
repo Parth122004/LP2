@@ -1,0 +1,180 @@
+A* :
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <stack>
+#include <cmath>
+
+using namespace std;
+
+// Node structure to store position and costs
+struct Node {
+    int x, y; // Grid coordinates
+    int gCost, hCost; // gCost: cost from start, hCost: heuristic to goal
+    Node* parent;
+
+    Node(int x, int y, int gCost, int hCost, Node* parent = nullptr)
+        : x(x), y(y), gCost(gCost), hCost(hCost), parent(parent) {}
+
+    int fCost() const {
+        return gCost + hCost;
+    }
+};
+
+// For min-heap priority queue based on fCost
+struct CompareNode {
+    bool operator()(Node* a, Node* b) {
+        return a->fCost() > b->fCost();
+    }
+};
+
+// Manhattan Distance Heuristic
+int calHeuristic(int x1, int y1, int x2, int y2) {
+    return abs(x1 - x2) + abs(y1 - y2);
+}
+
+// Print path from start to goal
+void printPath(Node* node) {
+    stack<pair<int, int>> pathStack;
+    while (node != nullptr) {
+        pathStack.push({node->x, node->y});
+        node = node->parent;
+    }
+
+    cout << "\nPath from Start to Goal:\n";
+    while (!pathStack.empty()) {
+        cout << "(" << pathStack.top().first << ", " << pathStack.top().second << ") ";
+        pathStack.pop();
+    }
+    cout << "\n";
+}
+
+// Check if a cell is within bounds, walkable and not visited
+bool isValid(int x, int y, int rows, int cols, const vector<vector<int>>& grid, const vector<vector<bool>>& visited) {
+    return x >= 0 && y >= 0 && x < rows && y < cols && grid[x][y] == 0 && !visited[x][y];
+}
+
+// A* Pathfinding Algorithm
+void Astar(vector<vector<int>>& grid, pair<int, int> start, pair<int, int> goal) {
+    int rows = grid.size();
+    int cols = grid[0].size();
+
+    priority_queue<Node*, vector<Node*>, CompareNode> openList;
+    vector<vector<bool>> visited(rows, vector<bool>(cols, false));
+
+    Node* startNode = new Node(start.first, start.second, 0, calHeuristic(start.first, start.second, goal.first, goal.second));
+    openList.push(startNode);
+
+    int dx[] = {-1, 1, 0, 0}; // Up, Down
+    int dy[] = {0, 0, -1, 1}; // Left, Right
+
+    while (!openList.empty()) {
+        Node* current = openList.top();
+        openList.pop();
+
+        int x = current->x, y = current->y;
+
+        if (x == goal.first && y == goal.second) {
+            printPath(current);
+            return;
+        }
+
+        visited[x][y] = true;
+
+        for (int i = 0; i < 4; ++i) {
+            int newX = x + dx[i];
+            int newY = y + dy[i];
+
+            if (isValid(newX, newY, rows, cols, grid, visited)) {
+                int g = current->gCost + 1;
+                int h = calHeuristic(newX, newY, goal.first, goal.second);
+                Node* neighbor = new Node(newX, newY, g, h, current);
+                openList.push(neighbor);
+            }
+        }
+    }
+
+    cout << "Path does not exist.\n";
+}
+
+int main() {
+    int rows, cols;
+    cout << "Enter number of rows and columns: ";
+    cin >> rows >> cols;
+
+    vector<vector<int>> grid(rows, vector<int>(cols));
+    cout << "Enter the grid (0 for free, 1 for obstacle):\n";
+    for (int i = 0; i < rows; ++i)
+        for (int j = 0; j < cols; ++j)
+            cin >> grid[i][j];
+
+    // Make sure start and goal are not blocked
+    grid[0][0] = 0;
+    grid[rows - 1][cols - 1] = 0;
+
+    cout << "Grid:\n";
+    for (const auto& row : grid) {
+        for (int cell : row)
+            cout << cell << " ";
+        cout << endl;
+    }
+
+    pair<int, int> start = {0, 0};
+    pair<int, int> goal = {rows - 1, cols - 1};
+
+    Astar(grid, start, goal);
+
+    return 0;
+}
+
+
+//g++ astar.cpp -o astar
+//./astar
+
+/*Enter number of rows and columns: 
+4 4
+Enter the grid: 
+0 1 0 0
+0 1 0 1
+0 0 0 1
+1 1 0 0
+*/
+
+-----------------------------------------------------------
+
+
+
+
+1. What is the A Algorithm?*
+A* is a best-first search algorithm that finds the shortest path from a start node to a target node in a weighted grid using:
+
+g(n): cost from start to current node
+
+h(n): estimated cost to goal (heuristic)
+
+f(n) = g(n) + h(n)
+
+2. Why is it used?
+It’s optimal and complete, meaning it finds the best path if one exists, and works efficiently with a good heuristic.
+
+3. What heuristic is used here?
+Manhattan Distance — good for 4-direction movement in grid-based pathfinding.
+
+4. What is the time complexity?
+In the worst case: O(b^d) where b = branching factor and d = depth.
+
+5. Applications?
+
+Games (e.g., pathfinding for AI characters)
+
+Robotics
+
+Navigation systems
+
+🧠 System Type
+This is an example of an Artificial Intelligence-based Expert System for Path Planning using Informed Search.
+More specifically, it's a grid-based pathfinding expert system using the A* algorithm, widely used in robotics, game AI, and map navigation.
+
+Would you like a diagram or visual explanation of how A* works?
